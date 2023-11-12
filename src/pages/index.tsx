@@ -4,6 +4,9 @@ import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { ReactElement } from 'react';
 
+import { userModel } from '@/entities/user';
+import { AppLayoutAuthorized } from '@/widgets/layout';
+
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const { locale } = context;
 
@@ -16,9 +19,17 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
 const Home = () => {
   const { t } = useTranslation();
-  return <Box sx={{ color: 'red' }}>{t('Hello')} world</Box>;
+  const { data } = userModel.useUsers();
+  return (
+    <Box sx={{ color: 'red' }}>
+      {t('Hello')}
+      {JSON.stringify(data)}
+    </Box>
+  );
 };
 
-Home.getLayout = (page: ReactElement) => <Box>{page}</Box>;
+Home.getLayout = (page: ReactElement) => (
+  <AppLayoutAuthorized>{page}</AppLayoutAuthorized>
+);
 
 export default Home;
