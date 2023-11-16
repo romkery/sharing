@@ -3,7 +3,7 @@ import Document, { Head, Html, Main, NextScript } from 'next/document';
 export default class MyDocument extends Document {
   render() {
     return (
-      <Html lang="ru">
+      <Html lang="ru" style={{ width: '100%', height: '100%' }}>
         <Head>
           <link rel="shortcut icon" href="/favicon.ico" />
           <meta name="emotion-insertion-point" content="" />

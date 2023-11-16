@@ -1,5 +1,6 @@
-import { useUsers } from './model';
+import { useUser, useUsers } from './model';
 
 export const userModel = {
-  useUsers,
+  useUser: useUser,
+  useUsers: useUsers,
 };

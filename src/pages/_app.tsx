@@ -1,4 +1,6 @@
+import { Box } from '@mui/material';
 import CssBaseline from '@mui/material/CssBaseline';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import type { NextPage } from 'next';
 import type { AppProps } from 'next/app';
@@ -22,11 +24,25 @@ function App({ Component, pageProps }: AppPropsWithLayout) {
       new QueryClient({
         defaultOptions: {
           queries: {
-            staleTime: 60 * 1000,
+            // staleTime: 60 * 1000,
           },
         },
       }),
   );
+  const theme = createTheme({
+    palette: {
+      primary: {
+        main: '#48ffd5',
+      },
+      secondary: {
+        main: '#ff4081',
+      },
+      text: {
+        primary: '#FFFFFF',
+        secondary: '#FFFFFF',
+      },
+    },
+  });
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -34,7 +50,11 @@ function App({ Component, pageProps }: AppPropsWithLayout) {
         <meta name="viewport" content="initial-scale=1, width=device-width" />
       </Head>
       <CssBaseline />
-      {getLayout(<Component {...pageProps} />)}
+      <ThemeProvider theme={theme}>
+        <Box sx={{ backgroundColor: '#3e3e42' }}>
+          {getLayout(<Component {...pageProps} />)}
+        </Box>
+      </ThemeProvider>
     </QueryClientProvider>
   );
 }

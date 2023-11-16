@@ -1,9 +1,24 @@
 import { useQuery, UseQueryOptions } from '@tanstack/react-query';
 
-import { getUser } from '@/entities/user/api';
+import { getUser, getUsers } from '@/entities/user/api';
 
-export function useUsers(
-  options: Omit<UseQueryOptions<any[], Error>, 'queryKey' | 'queryFn'> = {},
-) {
-  return useQuery<any[], Error>({ queryKey: ['users'], queryFn: getUser });
+interface OptionsType
+  extends Omit<UseQueryOptions<any[], Error>, 'queryKey' | 'queryFn'> {
+  username: string;
+}
+
+export function useUser(options: OptionsType) {
+  return useQuery<any[], Error>({
+    queryKey: ['users'],
+    queryFn: () => getUser({ username: options.username }),
+    ...options,
+  });
+}
+
+export function useUsers(options: Omit<OptionsType, 'username'>) {
+  return useQuery<any[], Error>({
+    queryKey: ['users'],
+    queryFn: () => getUsers(),
+    ...options,
+  });
 }
