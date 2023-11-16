@@ -53,6 +53,13 @@ function App({ Component, pageProps }: AppPropsWithLayout) {
       <ThemeProvider theme={theme}>
         <Box sx={{ backgroundColor: '#3e3e42' }}>
           {getLayout(<Component {...pageProps} />)}
+          <style jsx global>
+            {`
+              body {
+                background: #1e1e1e;
+              }
+            `}
+          </style>
         </Box>
       </ThemeProvider>
     </QueryClientProvider>
