@@ -101,7 +101,7 @@ export default function Product() {
     postProduct({
       ...data,
       img_url: result
-        ? `https://sharing-back.onrender.com${result[0]?.url}`
+        ? `${process.env.NEXT_PUBLIC_BASE_URL}${result[0]?.url}`
         : '',
       ownerId: `${user.id}`,
       isPublished: true,

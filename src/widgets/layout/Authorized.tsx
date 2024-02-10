@@ -1,11 +1,5 @@
-import {
-  Box,
-  Button,
-  FormControl,
-  OutlinedInput,
-  Tab,
-  Tabs,
-} from '@mui/material';
+import LogoutIcon from '@mui/icons-material/Logout';
+import { Box, Button, IconButton, Tab, Tabs } from '@mui/material';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'next-i18next';
 import React, {
@@ -13,11 +7,10 @@ import React, {
   PropsWithChildren,
   ReactNode,
   useContext,
-  useEffect,
   useState,
 } from 'react';
+import { useForm } from 'react-hook-form';
 
-import { userModel } from '@/entities/user';
 import { viewerModel } from '@/entities/viewer';
 import { Logo } from '@/shared/ui/assets/Logo';
 
@@ -59,97 +52,97 @@ const Content = ({ children }: PropsWithChildren) => {
   const [input, setInput] = useState<string>('');
   const isUser = UsersMap.has(input);
 
-  const users = userModel.useUser({
-    username: UsersMap.get(input)?.username || '',
-    enabled: isUser,
-  });
+  // const users = userModel.useUser({
+  //   username: UsersMap.get(input)?.username || '',
+  //   enabled: isUser,
+  // });
+  //
+  // const { user, setUser, token, setToken } = useUser();
+  //
+  // useEffect(() => {
+  //   if (users.isSuccess && users.data) {
+  //     setUser(users.data[0]);
+  //   }
+  // }, [users.isSuccess]);
+  //
+  // const handleTextInputChange = (event: any) => {
+  //   event!.preventDefault();
+  //   setInput(event!.target!.value);
+  // };
+  //
+  // const [errorText, setErrorText] = useState<string>('');
+  //
+  // const { mutate: login } = viewerModel.useLogin({
+  //   onSuccess: () => {
+  //     queryClient.resetQueries();
+  //     if (router.query.from && router.query.from !== '/') {
+  //       router.push(`${router.query.from}`);
+  //     } else {
+  //       router.push('/');
+  //     }
+  //   },
+  //   onError: () => {
+  //     setErrorText(t('Username or password is incorrect') ?? '');
+  //   },
+  // });
 
-  const { user, setUser, token, setToken } = useUser();
-
-  useEffect(() => {
-    if (users.isSuccess && users.data) {
-      setUser(users.data[0]);
-    }
-  }, [users.isSuccess]);
-
-  const handleTextInputChange = (event: any) => {
-    event!.preventDefault();
-    setInput(event!.target!.value);
-  };
-
-  const login = async (email, password) => {
-    try {
-      const response = await fetch(
-        'https://sharing-back.onrender.com/api/auth/local',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            identifier: email,
-            password: password,
-          }),
-        },
-      );
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message[0].messages[0].message);
-      }
-
-      const data = await response.json();
-      const jwtToken = data.jwt;
-      return jwtToken;
-    } catch (error) {
-      console.error('Authentication error:', error?.message || '');
-      throw error;
-    }
-  };
+  // const logan = async (email, password) => {
+  //   try {
+  //     const response = await fetch(
+  //       `${process.env.NEXT_PUBLIC_BASE_URL}/api/auth/local`,
+  //       {
+  //         method: 'POST',
+  //         headers: {
+  //           'Content-Type': 'application/json',
+  //         },
+  //         body: JSON.stringify({
+  //           identifier: email,
+  //           password: password,
+  //         }),
+  //       },
+  //     );
+  //
+  //     if (!response.ok) {
+  //       const errorData = await response.json();
+  //       throw new Error(errorData.message[0].messages[0].message);
+  //     }
+  //
+  //     const data = await response.json();
+  //     const jwtToken = data.jwt;
+  //     return jwtToken;
+  //   } catch (error) {
+  //     console.error('Authentication error:', error?.message || '');
+  //     throw error;
+  //   }
+  // };
 
   // Использование функции для входа и получения токена
   const email = 'denisov.daniil.2018@gmail.com';
   const password = 'Greg123493';
 
-  useEffect(() => {
-    if (!token) {
-      const log = async () => {
-        const jwtToken = await login(email, password);
-        setToken(jwtToken);
-      };
-      log();
-    }
-  }, [token]);
+  // useEffect(() => {
+  //     if (!token) {
+  //         const log = async () => {
+  //             const jwtToken = await login(email, password);
+  //             setToken(jwtToken);
+  //         };
+  //         login({identifier:});
+  //     }
+  // }, [token]);
 
-  return !user ? (
-    <Box
-      sx={{
-        width: '100%',
-        height: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: '#1e1e1e',
-      }}
-    >
-      <form noValidate autoComplete="off" onSubmit={(e) => e.preventDefault()}>
-        <FormControl sx={{ width: '200px' }}>
-          <OutlinedInput
-            onChange={handleTextInputChange}
-            type="text"
-            placeholder="Please enter username"
-            sx={{
-              height: '50px',
-              color: 'white',
-              '& .MuiOutlinedInput-notchedOutline': {
-                borderColor: 'white',
-              },
-            }}
-          />
-        </FormControl>
-      </form>
-    </Box>
-  ) : (
+  const onSubmit = (data) => {
+    // login({password: data.password, identifier: data.login})
+    console.log(data);
+  };
+
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm();
+
+  return (
     <Box
       sx={{
         backgroundColor: '#1e1e1e',
@@ -181,6 +174,11 @@ const Header = () => {
   const handleTabChange = (event, newValue) => {
     const destination = newValue === 0 ? '/dashboard' : '/profile';
     router.push(destination);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('jwtToken');
+    router.push('/login');
   };
 
   const { isXS } = viewerModel.useResolution();
@@ -247,6 +245,10 @@ const Header = () => {
       >
         Создать объявление
       </Button>
+
+      <IconButton onClick={handleLogout}>
+        <LogoutIcon />
+      </IconButton>
     </Box>
   );
 };

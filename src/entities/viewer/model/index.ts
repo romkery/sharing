@@ -1,12 +1,8 @@
 import { useMediaQuery } from '@mui/material';
 import { useMutation, UseMutationOptions } from '@tanstack/react-query';
 
-import { login } from '@/entities/viewer/api';
-
-type LoginParamsType = {
-  identifier: string;
-  password: string;
-};
+import { login, register } from '../api';
+import { LoginParamsType, RegisterParamsType } from '../types';
 
 export function useLogin(
   options: Omit<
@@ -19,6 +15,24 @@ export function useLogin(
     ...options,
   });
 }
+
+export function useRegister(
+  options: Omit<
+    UseMutationOptions<boolean, Error, RegisterParamsType>,
+    'mutationFn'
+  > = {},
+) {
+  return useMutation<boolean, Error, RegisterParamsType>({
+    mutationFn: (params: RegisterParamsType) => register(params),
+    ...options,
+  });
+}
+
+// export function useLogout(
+//   options: Omit<UseMutationOptions<boolean, Error>, 'mutationFn'> = {},
+// ) {
+//   return useMutation<boolean, Error>(logout, options);
+// }
 
 export function useResolution() {
   const isXS = useMediaQuery('(max-width:767px)');
