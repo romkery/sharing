@@ -9,29 +9,29 @@ import {
 import {
   deleteProduct,
   getImage,
-  getProduct,
+  getProducts,
+  postImage,
   postProduct,
   putProduct,
 } from '@/entities/products/api';
 
 import { ImageData, Product, ProductData } from '../types';
 
-interface ProductOptionsType
-  extends Omit<UseQueryOptions<ProductData[], Error>, 'queryKey' | 'queryFn'> {}
-
-interface ImagesOptionsType
-  extends Omit<UseQueryOptions<ImageData[], Error>, 'queryKey' | 'queryFn'> {}
-
-export function useProducts(options: ProductOptionsType) {
+export function useProducts(
+  options: Omit<
+    UseQueryOptions<ProductData[], Error>,
+    'queryKey' | 'queryFn'
+  > = {},
+) {
   return useQuery<ProductData[], Error>({
     queryKey: ['products'],
-    queryFn: getProduct,
+    queryFn: getProducts,
     ...options,
   });
 }
 
 export function useCreateProduct(
-  options: Omit<UseMutationOptions<boolean, Error, Product>, 'mutationFn'>,
+  options: Omit<UseMutationOptions<boolean, Error, Product>, 'mutationFn'> = {},
 ) {
   const queryClient = useQueryClient();
   return useMutation<boolean, Error, Product>({
@@ -43,37 +43,57 @@ export function useCreateProduct(
 }
 
 export function useUpdateProduct(
-  options: Omit<UseMutationOptions<boolean, Error, Product>, 'mutationFn'> & {
-    id: number;
-  },
+  options: Omit<
+    UseMutationOptions<boolean, Error, ProductData>,
+    'mutationFn'
+  > = {},
 ) {
   const queryClient = useQueryClient();
-  return useMutation<boolean, Error, Product>({
+  return useMutation<boolean, Error, ProductData>({
     mutationKey: ['products'],
-    mutationFn: (data: Product) => putProduct(data, options.id),
+    mutationFn: ({ attributes, id }) => putProduct(attributes, id),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['products'] }),
     ...options,
   });
 }
 
 export function useDeleteProduct(
-  options: Omit<UseMutationOptions<boolean, Error, Product>, 'mutationFn'> & {
-    id: number;
-  },
+  options: Omit<
+    UseMutationOptions<boolean, Error, { id: number }>,
+    'mutationFn'
+  > = {},
 ) {
   const queryClient = useQueryClient();
-  return useMutation<boolean, Error, Product>({
+  return useMutation<boolean, Error, { id: number }>({
     mutationKey: ['products'],
-    mutationFn: () => deleteProduct(options.id),
+    mutationFn: ({ id }) => deleteProduct(id),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['products'] }),
     ...options,
   });
 }
 
-export function useImages(options: ImagesOptionsType) {
+export function useImages(
+  options: Omit<
+    UseQueryOptions<ImageData[], Error>,
+    'queryKey' | 'queryFn'
+  > = {},
+) {
   return useQuery<ImageData[], Error>({
     queryKey: ['images'],
     queryFn: getImage,
+    ...options,
+  });
+}
+
+export function useCreateImage(
+  options: Omit<
+    UseMutationOptions<{ url: string }, Error, FormData>,
+    'mutationFn'
+  > = {},
+) {
+  return useMutation<{ url: string }, Error, FormData>({
+    mutationKey: ['image'],
+    mutationFn: (data: FormData) => postImage(data),
     ...options,
   });
 }

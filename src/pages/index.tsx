@@ -1,11 +1,13 @@
-import { Box } from '@mui/material';
+import { Box, CircularProgress } from '@mui/material';
 import { GetServerSideProps } from 'next';
 import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import React, { ReactElement } from 'react';
 
+import { productsModel } from '@/entities/products';
 import { userModel } from '@/entities/user';
 import { AppLayoutAuthorized } from '@/widgets/layout';
+import { ProductCard } from '@/widgets/product';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const { locale } = context;
@@ -19,8 +21,17 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
 const Home = () => {
   const { t } = useTranslation();
-
   const user = userModel.useUser({});
+  const products = productsModel.useProducts({});
+  const images = productsModel.useImages({});
+
+  if (products.isLoading || images.isLoading || user.isLoading) {
+    return <CircularProgress />;
+  }
+
+  if (products.isError || images.isError) {
+    console.log('error in get product');
+  }
 
   return (
     <Box
@@ -40,18 +51,27 @@ const Home = () => {
       <Box
         sx={{
           display: 'flex',
-          flexDirection: 'column',
-          width: '100%',
-          height: '100%',
-          alignItems: 'center',
           justifyContent: 'center',
+          alignItems: 'center',
           padding: '20px',
+          flexDirection: 'row',
+          gap: '20px',
+          flexWrap: 'wrap',
         }}
       >
-        <Box sx={{ width: '100%' }}>
-          {t('Hello')}
-          {JSON.stringify(user.data)}
-        </Box>
+        {products.data
+          ?.filter((p) => p.attributes.ownerId !== user.data?.id)
+          .map((product, index) => {
+            return (
+              <ProductCard
+                key={`product-${product.id}`}
+                index={index}
+                product={product}
+                onPublishClick={() => console.log('publish')}
+                onRentClick={() => console.log('rent')}
+              />
+            );
+          })}
       </Box>
     </Box>
   );

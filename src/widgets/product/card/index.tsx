@@ -1,25 +1,26 @@
+import { SnackbarCloseReason } from '@mui/base';
 import {
   Alert,
   Button,
   Card as MuiCard,
   CardContent,
   CardMedia,
+  CircularProgress,
   Snackbar,
   Typography,
 } from '@mui/material';
-import React, { useState } from 'react';
+import React, { SyntheticEvent, useState } from 'react';
 import { animated, useSpring } from 'react-spring';
 
 import { productsModel } from '@/entities/products';
 import { ProductData } from '@/entities/products/types';
 import { userModel } from '@/entities/user';
-import { useUser } from '@/widgets/layout/Authorized';
 
 interface ProductCardProps {
   product: ProductData;
-  img_url: string;
-  onRentClick: () => void;
-  onPublishClick: () => void;
+  onRentClick?: () => void;
+  onPublishClick?: () => void;
+  index: number;
 }
 
 export const Card: React.FC<ProductCardProps> = ({
@@ -31,14 +32,10 @@ export const Card: React.FC<ProductCardProps> = ({
   const { title, img_url, description, ownerId, isRent, isPublished } =
     product.attributes;
   const users = userModel.useUsers({});
-  const { mutate: rentProduct } = productsModel.useUpdateProduct({
-    id: product.id,
-  });
-  const { mutate: deleteProduct } = productsModel.useDeleteProduct({
-    id: product.id,
-  });
+  const user = userModel.useUser({});
 
-  const { user } = useUser();
+  const { mutate: rentProduct } = productsModel.useUpdateProduct();
+  const { mutate: deleteProduct } = productsModel.useDeleteProduct();
 
   const [isCardVisible, setIsCardVisible] = useState(true);
 
@@ -55,7 +52,15 @@ export const Card: React.FC<ProductCardProps> = ({
   });
 
   const handleRent = () => {
-    rentProduct({ ...product.attributes, isRent: true, customerId: user.id });
+    if (!user.data || !product) return;
+    rentProduct({
+      id: product.id,
+      attributes: {
+        ...product.attributes,
+        isRent: true,
+        customerId: user.data.id,
+      },
+    });
     setOpen(true);
     setText('Успешно забронированно');
   };
@@ -68,7 +73,10 @@ export const Card: React.FC<ProductCardProps> = ({
   const [open, setOpen] = useState(false);
   const [text, setText] = useState('');
 
-  const handleClose = (event, reason) => {
+  const handleClose = (
+    event: Event | SyntheticEvent<Element, Event>,
+    reason: SnackbarCloseReason,
+  ) => {
     if (reason === 'clickaway') {
       return;
     }
@@ -76,19 +84,20 @@ export const Card: React.FC<ProductCardProps> = ({
     setOpen(false);
   };
 
-  function formatTimestamp(timestamp) {
+  function formatTimestamp(timestamp: string) {
     const date = new Date(timestamp);
 
-    const options = {
+    return date.toLocaleDateString('ru-RU', {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
       hour: 'numeric',
       minute: 'numeric',
-    };
+    });
+  }
 
-    const formattedDate = date.toLocaleDateString('ru-RU', options);
-    return formattedDate;
+  if (users.isLoading || user.isLoading) {
+    return <CircularProgress />;
   }
 
   return (
@@ -148,10 +157,10 @@ export const Card: React.FC<ProductCardProps> = ({
             sx={{ marginTop: 1 }}
           >
             Статус: {isRent ? 'забронировано' : 'доступно'}
-            {users.data?.find((u) => u.id === product.attributes?.customerId)
+            {users.data?.find((u) => u.id === product?.attributes.customerId)
               ?.username &&
               ` пользователем ${users.data?.find(
-                (u) => u.id === product.attributes?.customerId,
+                (u) => u.id === product?.attributes.customerId,
               )?.username}`}
           </Typography>
           <Typography
@@ -162,7 +171,7 @@ export const Card: React.FC<ProductCardProps> = ({
             {isPublished ? 'Опубликовано' : 'Снято с публикации'}
           </Typography>
         </CardContent>
-        {product.attributes.ownerId !== user.id ? (
+        {product.attributes.ownerId !== user.data?.id ? (
           <CardContent
             sx={{ display: 'flex', justifyContent: 'space-between' }}
           >
@@ -190,9 +199,7 @@ export const Card: React.FC<ProductCardProps> = ({
         }}
         sx={{ position: 'absolute' }}
       >
-        <Alert onClose={handleClose} severity="success">
-          {text}
-        </Alert>
+        <Alert severity="success">{text}</Alert>
       </Snackbar>
     </animated.div>
   );

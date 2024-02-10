@@ -1,11 +1,11 @@
-import { Box, Typography } from '@mui/material';
+import { Box, CircularProgress, Typography } from '@mui/material';
 import { GetServerSideProps } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import React, { ReactElement } from 'react';
 
 import { productsModel } from '@/entities/products';
+import { userModel } from '@/entities/user';
 import { AppLayoutAuthorized } from '@/widgets/layout';
-import { useUser } from '@/widgets/layout/Authorized';
 import { ProductCard } from '@/widgets/product';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
@@ -20,7 +20,11 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
 export default function Profile() {
   const products = productsModel.useProducts({});
-  const { user } = useUser();
+  const user = userModel.useUser();
+
+  if (user.isLoading) {
+    return <CircularProgress />;
+  }
 
   return (
     <Box
@@ -47,15 +51,14 @@ export default function Profile() {
         }}
       >
         {products.data
-          ?.filter((p) => p.attributes.ownerId == user.id)
+          ?.filter((p) => p.attributes.ownerId == user.data?.id)
           .map((product, index) => {
             return (
               <ProductCard
                 index={index}
                 key={`product-${product.id}`}
                 product={product}
-                images={product.img_url}
-                onPublishClick={() => console.log('punlish')}
+                onPublishClick={() => console.log('publish')}
                 onRentClick={() => console.log('rent')}
               />
             );
@@ -75,15 +78,14 @@ export default function Profile() {
         }}
       >
         {products.data
-          ?.filter((p) => p.attributes.customerId == user.id)
+          ?.filter((p) => p.attributes.customerId == user.data?.id)
           .map((product, index) => {
             return (
               <ProductCard
                 index={index}
                 key={`product-${product.id}`}
                 product={product}
-                images={product.img_url}
-                onPublishClick={() => console.log('punlish')}
+                onPublishClick={() => console.log('publish')}
                 onRentClick={() => console.log('rent')}
               />
             );

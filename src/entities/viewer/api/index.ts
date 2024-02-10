@@ -8,9 +8,11 @@ export async function login({ ...data }: LoginParamsType) {
       'Content-Type': 'application/json',
     },
   });
-  return response.status === 200
-    ? localStorage.setItem('jwtToken', response.data.jwt)
-    : null;
+  if (response.status === 200) {
+    localStorage.setItem('jwtToken', response.data.jwt);
+  }
+
+  return response.status === 200;
 }
 
 export async function register({ ...data }: RegisterParamsType) {
@@ -19,13 +21,9 @@ export async function register({ ...data }: RegisterParamsType) {
       'Content-Type': 'application/json',
     },
   });
+  if (response.status === 200) {
+    localStorage.setItem('jwtToken', response.data.jwt);
+  }
 
-  return response.status === 200
-    ? localStorage.setItem('jwtToken', response.data.jwt)
-    : null;
+  return response.status === 200;
 }
-
-// export async function logout() {
-//   const response = await publicApiClient.post('v2.1/logout');
-//   return response.status === 204 ? true : false;
-// }

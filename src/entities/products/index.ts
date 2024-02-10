@@ -1,4 +1,5 @@
 import {
+  useCreateImage,
   useCreateProduct,
   useDeleteProduct,
   useImages,
@@ -9,6 +10,7 @@ import {
 export const productsModel = {
   useProducts,
   useImages,
+  useCreateImage,
   useCreateProduct,
   useUpdateProduct,
   useDeleteProduct,

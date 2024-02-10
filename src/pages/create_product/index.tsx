@@ -1,3 +1,4 @@
+import { SnackbarCloseReason } from '@mui/base';
 import { AddAPhoto, Delete, Update } from '@mui/icons-material';
 import {
   Alert,
@@ -14,16 +15,22 @@ import {
 } from '@mui/material';
 import { Stack, styled } from '@mui/system';
 import { GetServerSideProps } from 'next';
+import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
-import React, { ReactElement, useState } from 'react';
+import React, {
+  ReactElement,
+  SyntheticEvent,
+  useEffect,
+  useState,
+} from 'react';
 import { useForm } from 'react-hook-form';
-import ImageUploading from 'react-images-uploading';
+import ImageUploading, { ImageListType } from 'react-images-uploading';
 
 import { productsModel } from '@/entities/products';
 import { Product } from '@/entities/products/types';
+import { userModel } from '@/entities/user';
 import { AppLayoutAuthorized } from '@/widgets/layout';
-import { useUser } from '@/widgets/layout/Authorized';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const { locale } = context;
@@ -35,28 +42,31 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   };
 };
 
-const StyledForm = styled('form')({
-  display: 'flex',
-  flexDirection: 'column',
-  maxWidth: '400px',
-  margin: 'auto',
-  padding: '20px',
-});
-
-const StyledFormControl = styled(FormControl)({
-  margin: '10px 0',
-});
-
-const StyledButton = styled(Button)({
-  marginTop: '20px',
-});
-
 export default function Product() {
-  const { token, user } = useUser();
+  const router = useRouter();
+  const user = userModel.useUser();
+  const { mutate: postProduct } = productsModel.useCreateProduct({});
+  const {
+    mutate: postImage,
+    data: image,
+    isSuccess: imageUploaded,
+  } = productsModel.useCreateImage();
 
   const [open, setOpen] = useState(false);
+  const [images, setImages] = useState<ImageListType>([]);
+  const maxNumber = 1;
 
-  const handleClose = (event, reason) => {
+  const {
+    getValues,
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<Product>();
+
+  const handleClose = (
+    event: Event | SyntheticEvent,
+    reason: SnackbarCloseReason,
+  ) => {
     if (reason === 'clickaway') {
       return;
     }
@@ -64,51 +74,31 @@ export default function Product() {
     setOpen(false);
   };
 
-  const [images, setImages] = React.useState([]);
-  const maxNumber = 1;
-
-  const onChange = (imageList, addUpdateIndex) => {
+  const onChangeImage = (imageList: ImageListType) => {
     setImages(imageList);
   };
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    getValues,
-  } = useForm<Product>();
-
-  const router = useRouter();
-
-  const { mutate: postProduct } = productsModel.useCreateProduct({});
-  const onSubmit = async (data) => {
-    let result;
+  const onSubmit = async () => {
     if (images.length) {
       const formData = new FormData();
-      formData.append('files', images[0].file);
-      const response = await fetch(
-        'https://sharing-back.onrender.com/api/upload',
-        {
-          method: 'POST',
-          body: formData,
-          headers: {
-            Authorization: `Bearer ${token}`, // Replace with your valid JWT token
-          },
-        },
-      );
-      result = await response.json();
+      formData.append('files', images[0].file!);
+      postImage(formData);
     }
-    postProduct({
-      ...data,
-      img_url: result
-        ? `${process.env.NEXT_PUBLIC_BASE_URL}${result[0]?.url}`
-        : '',
-      ownerId: `${user.id}`,
-      isPublished: true,
-    });
-    setOpen(true);
-    setTimeout(() => router.push('/profile'), 1500);
   };
+  // W/A Strapi need before upload image, then link url to product
+  useEffect(() => {
+    if (imageUploaded && image) {
+      postProduct({
+        ...getValues(),
+        img_url: `${process.env.NEXT_PUBLIC_BASE_URL}${image.url}`,
+        ownerId: user.data?.id || 0,
+        isPublished: true,
+      });
+
+      setOpen(true);
+      setTimeout(() => router.push('/profile'), 1500);
+    }
+  }, [image, imageUploaded, getValues, router, postProduct, user]);
 
   return (
     <Box
@@ -167,7 +157,7 @@ export default function Product() {
           <ImageUploading
             multiple
             value={images}
-            onChange={onChange}
+            onChange={onChangeImage}
             maxNumber={maxNumber}
             dataURLKey="data_url"
           >
@@ -212,10 +202,7 @@ export default function Product() {
                           direction="column"
                           alignItems="center"
                         >
-                          <img src={image['data_url']} alt="" width="100" />
-                          <Typography variant="caption">
-                            Фото {index + 1}
-                          </Typography>
+                          <Image src={image['data_url']} alt="" width="100" />
                           <Stack direction="row" spacing={1} mt={1}>
                             <IconButton onClick={() => onImageUpdate(index)}>
                               <Update />
@@ -247,9 +234,7 @@ export default function Product() {
           horizontal: 'center',
         }}
       >
-        <Alert onClose={handleClose} severity="success">
-          Успешно опубликовано
-        </Alert>
+        <Alert severity="success">Успешно опубликовано</Alert>
       </Snackbar>
     </Box>
   );
@@ -258,3 +243,19 @@ export default function Product() {
 Product.getLayout = (page: ReactElement) => (
   <AppLayoutAuthorized>{page}</AppLayoutAuthorized>
 );
+
+const StyledForm = styled('form')({
+  display: 'flex',
+  flexDirection: 'column',
+  maxWidth: '400px',
+  margin: 'auto',
+  padding: '20px',
+});
+
+const StyledFormControl = styled(FormControl)({
+  margin: '10px 0',
+});
+
+const StyledButton = styled(Button)({
+  marginTop: '20px',
+});

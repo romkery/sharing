@@ -28,12 +28,6 @@ export function useRegister(
   });
 }
 
-// export function useLogout(
-//   options: Omit<UseMutationOptions<boolean, Error>, 'mutationFn'> = {},
-// ) {
-//   return useMutation<boolean, Error>(logout, options);
-// }
-
 export function useResolution() {
   const isXS = useMediaQuery('(max-width:767px)');
   const isSM = useMediaQuery('(min-width:768px) and (max-width:1279px)');
