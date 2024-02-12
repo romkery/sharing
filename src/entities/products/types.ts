@@ -2,9 +2,14 @@ export interface Product {
   title: string;
   img_url: string;
   description: string;
-  ownerId: string;
+  ownerId: number;
   isRent: boolean;
   isPublished: boolean;
+  createdAt: string;
+  customerId: number | null;
+  locale: 'en' | 'ru';
+  publishedAt: string;
+  updatedAt: string;
 }
 
 export interface ProductData {

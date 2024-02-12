@@ -6,8 +6,7 @@ import type { NextPage } from 'next';
 import type { AppProps } from 'next/app';
 import Head from 'next/head';
 import { appWithTranslation } from 'next-i18next';
-import type { ReactElement, ReactNode } from 'react';
-import React from 'react';
+import React, { ReactElement, ReactNode, useState } from 'react';
 
 export type PageWithLayout<P = object, IP = P> = NextPage<P, IP> & {
   getLayout?: (page: ReactElement) => ReactNode;
@@ -19,16 +18,17 @@ type AppPropsWithLayout = AppProps & {
 
 function App({ Component, pageProps }: AppPropsWithLayout) {
   const getLayout = Component.getLayout ?? ((page) => page);
-  const [queryClient] = React.useState(
+  const [queryClient] = useState(
     () =>
       new QueryClient({
         defaultOptions: {
           queries: {
-            // staleTime: 60 * 1000,
+            staleTime: 60 * 1000,
           },
         },
       }),
   );
+
   const theme = createTheme({
     palette: {
       primary: {

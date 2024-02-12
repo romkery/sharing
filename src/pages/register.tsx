@@ -1,8 +1,10 @@
-import { Box, Button, TextField } from '@mui/material';
+import { SnackbarCloseReason } from '@mui/base';
+import { Alert, Box, Button, Snackbar, TextField } from '@mui/material';
 import { styled } from '@mui/system';
 import { GetStaticProps } from 'next';
 import { useRouter } from 'next/router';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import React, { SyntheticEvent, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 
 import { viewerModel } from '@/entities/viewer';
@@ -31,12 +33,32 @@ export default function Register() {
     formState: { errors },
   } = useForm<FormValues>();
 
+  const onRegisterSuccess = () => {
+    setOpen(true);
+    setTimeout(() => {
+      router.push('/login');
+    }, 1500);
+  };
+
   const { mutate: registerUser } = viewerModel.useRegister({
-    onSuccess: () => router.push('/login'),
+    onSuccess: onRegisterSuccess,
   });
 
   const onSubmit: SubmitHandler<FormValues> = (data) => {
     registerUser(data);
+  };
+
+  const [open, setOpen] = useState(false);
+
+  const handleClose = (
+    event: Event | SyntheticEvent<Element, Event>,
+    reason: SnackbarCloseReason,
+  ) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpen(false);
   };
 
   return (
@@ -94,6 +116,17 @@ export default function Register() {
           </Button>
         </Form>
       </Box>
+      <Snackbar
+        open={open}
+        autoHideDuration={1500}
+        onClose={handleClose}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'center',
+        }}
+      >
+        <Alert severity="success">Успешная регистрация!</Alert>
+      </Snackbar>
     </Box>
   );
 }
