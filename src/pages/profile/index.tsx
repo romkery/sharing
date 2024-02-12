@@ -1,10 +1,11 @@
-import { Box, CircularProgress, Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import { GetServerSideProps } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import React, { ReactElement } from 'react';
 
 import { productsModel } from '@/entities/products';
 import { userModel } from '@/entities/user';
+import { FullScreenLoader } from '@/shared/ui';
 import { AppLayoutAuthorized } from '@/widgets/layout';
 import { ProductCard } from '@/widgets/product';
 
@@ -23,7 +24,7 @@ export default function Profile() {
   const user = userModel.useUser();
 
   if (user.isLoading) {
-    return <CircularProgress />;
+    return <FullScreenLoader />;
   }
 
   return (

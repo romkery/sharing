@@ -5,7 +5,6 @@ import {
   Card as MuiCard,
   CardContent,
   CardMedia,
-  CircularProgress,
   Snackbar,
   Typography,
 } from '@mui/material';
@@ -15,6 +14,7 @@ import { animated, useSpring } from 'react-spring';
 import { productsModel } from '@/entities/products';
 import { ProductData } from '@/entities/products/types';
 import { userModel } from '@/entities/user';
+import { FullScreenLoader } from '@/shared/ui';
 
 interface ProductCardProps {
   product: ProductData;
@@ -97,7 +97,7 @@ export const Card: React.FC<ProductCardProps> = ({
   }
 
   if (users.isLoading || user.isLoading) {
-    return <CircularProgress />;
+    return <FullScreenLoader />;
   }
 
   return (

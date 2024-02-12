@@ -1,4 +1,4 @@
-import { Box, CircularProgress } from '@mui/material';
+import { Box } from '@mui/material';
 import { GetServerSideProps } from 'next';
 import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
@@ -6,6 +6,7 @@ import React, { ReactElement } from 'react';
 
 import { productsModel } from '@/entities/products';
 import { userModel } from '@/entities/user';
+import { FullScreenLoader } from '@/shared/ui';
 import { AppLayoutAuthorized } from '@/widgets/layout';
 import { ProductCard } from '@/widgets/product';
 
@@ -26,7 +27,7 @@ const Home = () => {
   const images = productsModel.useImages({});
 
   if (products.isLoading || images.isLoading || user.isLoading) {
-    return <CircularProgress />;
+    return <FullScreenLoader />;
   }
 
   if (products.isError || images.isError) {
@@ -36,11 +37,8 @@ const Home = () => {
   return (
     <Box
       sx={{
-        maxWidth: '100dvw',
-        height: '100vh',
         display: 'flex',
         flexDirection: 'column',
-        overflow: 'hidden',
         textWrap: 'wrap',
         wordBreak: 'break-word',
         fontSize: '16px',

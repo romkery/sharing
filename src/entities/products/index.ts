@@ -7,6 +7,8 @@ import {
   useUpdateProduct,
 } from './model';
 
+export { CreateForm as CreateProductForm } from './ui';
+
 export const productsModel = {
   useProducts,
   useImages,

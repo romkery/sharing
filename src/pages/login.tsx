@@ -57,7 +57,7 @@ export default function Login() {
           width: '300px',
           display: 'flex',
           flexDirection: 'column',
-          alignItems: 'center',
+          // alignItems: 'center',
           gap: '20px',
         }}
       >
@@ -89,7 +89,10 @@ export default function Login() {
             Войти
           </Button>
         </Form>
-        <Link href="/register" sx={{ textDecoration: 'none' }}>
+        <Link
+          href="/register"
+          sx={{ textDecoration: 'none', alignSelf: 'center' }}
+        >
           Зарегистрироваться
         </Link>
       </Box>
