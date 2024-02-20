@@ -103,7 +103,7 @@ export const Header = () => {
           color: 'white',
         }}
       >
-        <CreateProductForm />
+        <CreateProductForm onPostSuccess={handleCloseModal} />
       </Modal>
     </Box>
   );

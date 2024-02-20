@@ -12,8 +12,7 @@ import {
 } from '@mui/material';
 import { Stack, styled } from '@mui/system';
 import Image from 'next/image';
-import { useRouter } from 'next/router';
-import React, { SyntheticEvent, useEffect, useState } from 'react';
+import React, { SyntheticEvent, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import ImageUploading, { ImageListType } from 'react-images-uploading';
 
@@ -21,17 +20,30 @@ import { productsModel } from '@/entities/products';
 import { Product } from '@/entities/products/types';
 import { userModel } from '@/entities/user';
 
-export const CreateForm = () => {
-  const router = useRouter();
+export const CreateForm = ({
+  onPostSuccess,
+}: {
+  onPostSuccess: () => void;
+}) => {
   const user = userModel.useUser();
-  const { mutate: postProduct } = productsModel.useCreateProduct({});
-  const {
-    mutate: postImage,
-    data: image,
-    isSuccess: imageUploaded,
-  } = productsModel.useCreateImage();
+  const { mutate: postProduct, isPending: isPosting } =
+    productsModel.useCreateProduct({});
 
   const [open, setOpen] = useState(false);
+  const { mutate: postImage } = productsModel.useCreateImage({
+    onSuccess: (data) => {
+      postProduct({
+        ...getValues(),
+        img_url: `${process.env.NEXT_PUBLIC_BASE_URL}${data.url}`,
+        ownerId: user.data?.id || 0,
+        isPublished: true,
+      });
+
+      setOpen(true);
+      setTimeout(onPostSuccess, 1500);
+    },
+  });
+
   const [images, setImages] = useState<ImageListType>([]);
   const maxNumber = 1;
 
@@ -64,20 +76,6 @@ export const CreateForm = () => {
       postImage(formData);
     }
   };
-  // W/A Strapi need before upload image, then link url to product
-  useEffect(() => {
-    if (imageUploaded && image) {
-      postProduct({
-        ...getValues(),
-        img_url: `${process.env.NEXT_PUBLIC_BASE_URL}${image.url}`,
-        ownerId: user.data?.id || 0,
-        isPublished: true,
-      });
-
-      setOpen(true);
-      setTimeout(() => router.push('/profile'), 1500);
-    }
-  }, [image, imageUploaded, getValues, router, postProduct, user]);
 
   return (
     <>
@@ -155,7 +153,12 @@ export const CreateForm = () => {
                   <Stack spacing={2} direction="row">
                     {imageList.map((image, index) => (
                       <Stack key={index} direction="column" alignItems="center">
-                        <Image src={image['data_url']} alt="" width="100" />
+                        <Image
+                          src={image['data_url']}
+                          alt=""
+                          width="100"
+                          height="100"
+                        />
                         <Stack direction="row" spacing={1} mt={1}>
                           <IconButton onClick={() => onImageUpdate(index)}>
                             <Update />
