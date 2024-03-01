@@ -1,11 +1,12 @@
 import LogoutIcon from '@mui/icons-material/Logout';
-import { Box, Button, IconButton, Tab, Tabs } from '@mui/material';
+import { Box, IconButton, Tab, Tabs } from '@mui/material';
 import { useRouter } from 'next/router';
 import React, { useState } from 'react';
 
 import { CreateProductForm } from '@/entities/products';
 import { viewerModel } from '@/entities/viewer';
 import { Assets, Modal } from '@/shared/ui';
+import { Button as PrimaryButton } from '@/shared/ui/button';
 
 export const Header = () => {
   const router = useRouter();
@@ -67,24 +68,18 @@ export const Header = () => {
           alignItems: 'center',
         }}
       >
-        <Button
-          variant="outlined"
+        <PrimaryButton
           sx={{
             height: '40px',
             minWidth: isXS ? '50px' : '140px',
             fontSize: isXS ? '8px' : '12px',
             textTransform: 'none',
-            borderRadius: '6px',
             color: 'black',
-            backgroundColor: 'primary.main',
-            '&:hover': {
-              backgroundColor: '#59ffd8',
-            },
           }}
           onClick={handleOpenModal}
         >
           Создать объявление
-        </Button>
+        </PrimaryButton>
 
         <IconButton onClick={handleLogout}>
           <LogoutIcon sx={{ color: '#fff' }} />
