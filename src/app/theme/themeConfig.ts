@@ -54,8 +54,8 @@ export const palette: ColorPalettes = {
   },
   gray: {
     dark: '#000002',
-    semiDark: '#0F1B27',
-    medium: '#223343',
+    semiDark: '#3f3f3f',
+    medium: '#595959',
     light: '#DEDFE8',
     default: '#8C8EA5',
   },

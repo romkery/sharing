@@ -11,6 +11,7 @@ import {
 import React, { SyntheticEvent, useState } from 'react';
 import { animated, useSpring } from 'react-spring';
 
+import { themeConfig } from '@/app/theme';
 import { productsModel } from '@/entities/products';
 import { ProductData } from '@/entities/products/types';
 import { userModel } from '@/entities/user';
@@ -97,6 +98,7 @@ export const Card: React.FC<ProductCardProps> = ({
   }
 
   if (users.isLoading || user.isLoading) {
+    // TODO should be placeholder
     return <FullScreenLoader />;
   }
 
@@ -111,6 +113,11 @@ export const Card: React.FC<ProductCardProps> = ({
           gap: '20px',
           backgroundColor: '#2d2d30',
           color: 'white',
+          '[glow] &': {
+            border: `1px solid ${themeConfig.palette.blue.default}`,
+          },
+          border: `1px solid ${themeConfig.palette.gray.semiDark}`,
+          position: 'relative',
         }}
       >
         <Typography variant={'caption'}>
