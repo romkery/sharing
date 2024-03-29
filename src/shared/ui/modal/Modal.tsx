@@ -100,5 +100,5 @@ const ModalContent = styled(Box)`
   box-shadow: 0 2px 8px rgba(52, 125, 254, 0.08);
   padding: 1rem;
   position: relative;
-  border-radius: 8px;
+  border-radius: 4px;
 `;

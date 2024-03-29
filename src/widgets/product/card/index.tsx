@@ -2,7 +2,6 @@ import { SnackbarCloseReason } from '@mui/base';
 import {
   Alert,
   Button,
-  Card as MuiCard,
   CardContent,
   CardMedia,
   Snackbar,
@@ -15,7 +14,7 @@ import { themeConfig } from '@/app/theme';
 import { productsModel } from '@/entities/products';
 import { ProductData } from '@/entities/products/types';
 import { userModel } from '@/entities/user';
-import { FullScreenLoader } from '@/shared/ui';
+import { Card as CardComponent, FullScreenLoader } from '@/shared/ui';
 
 interface ProductCardProps {
   product: ProductData;
@@ -104,14 +103,13 @@ export const Card: React.FC<ProductCardProps> = ({
 
   return (
     <animated.div style={springProps}>
-      <MuiCard
+      <CardComponent
         sx={{
           width: 345,
           padding: '10px',
           display: 'flex',
           flexDirection: 'column',
           gap: '20px',
-          backgroundColor: '#2d2d30',
           color: 'white',
           '[glow] &': {
             border: `1px solid ${themeConfig.palette.blue.default}`,
@@ -195,7 +193,7 @@ export const Card: React.FC<ProductCardProps> = ({
             </Button>
           </CardContent>
         )}
-      </MuiCard>
+      </CardComponent>
       <Snackbar
         open={open}
         autoHideDuration={1500}

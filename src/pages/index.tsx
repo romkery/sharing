@@ -1,10 +1,11 @@
+import { Glow, GlowCapture } from '@codaworks/react-glow';
 import { Box } from '@mui/material';
 import { GetServerSideProps } from 'next';
-import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import React, { ReactElement } from 'react';
 
 import { productsModel } from '@/entities/products';
+import { ProductData } from '@/entities/products/types';
 import { userModel } from '@/entities/user';
 import { FullScreenLoader } from '@/shared/ui';
 import { AppLayoutAuthorized } from '@/widgets/layout';
@@ -21,10 +22,12 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 };
 
 const Home = () => {
-  const { t } = useTranslation();
   const user = userModel.useUser({});
   const products = productsModel.useProducts({});
   const images = productsModel.useImages({});
+
+  const filterByOwner = (p: ProductData) =>
+    p.attributes.ownerId !== user.data?.id;
 
   if (products.isLoading || images.isLoading || user.isLoading) {
     return <FullScreenLoader />;
@@ -35,43 +38,45 @@ const Home = () => {
   }
 
   return (
-    <Box
-      sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        textWrap: 'wrap',
-        wordBreak: 'break-word',
-        fontSize: '16px',
-        textTransform: 'none',
-        textDecoration: 'none',
-      }}
-    >
+    <GlowCapture size={300}>
       <Box
         sx={{
           display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          padding: '20px',
-          flexDirection: 'row',
-          gap: '20px',
-          flexWrap: 'wrap',
+          flexDirection: 'column',
+          textWrap: 'wrap',
+          wordBreak: 'break-word',
+          fontSize: '16px',
+          textTransform: 'none',
+          textDecoration: 'none',
         }}
       >
-        {products.data
-          ?.filter((p) => p.attributes.ownerId !== user.data?.id)
-          .map((product, index) => {
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            padding: '20px',
+            flexDirection: 'row',
+            gap: '20px',
+            flexWrap: 'wrap',
+          }}
+        >
+          {products.data?.filter(filterByOwner).map((product, index) => {
             return (
-              <ProductCard
-                key={`product-${product.id}`}
-                index={index}
-                product={product}
-                onPublishClick={() => console.log('publish')}
-                onRentClick={() => console.log('rent')}
-              />
+              <Glow key={index}>
+                <ProductCard
+                  key={`product-${product.id}`}
+                  index={index}
+                  product={product}
+                  onPublishClick={() => console.log('publish')}
+                  onRentClick={() => console.log('rent')}
+                />
+              </Glow>
             );
           })}
+        </Box>
       </Box>
-    </Box>
+    </GlowCapture>
   );
 };
 
