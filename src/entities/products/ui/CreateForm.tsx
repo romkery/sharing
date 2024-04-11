@@ -7,7 +7,6 @@ import {
   IconButton,
   Input,
   InputLabel,
-  Snackbar,
   TextField,
 } from '@mui/material';
 import { Stack, styled } from '@mui/system';
@@ -19,6 +18,7 @@ import ImageUploading, { ImageListType } from 'react-images-uploading';
 import { productsModel } from '@/entities/products';
 import { Product } from '@/entities/products/types';
 import { userModel } from '@/entities/user';
+import { Snackbar } from '@/shared/ui';
 
 export const CreateForm = ({
   onPostSuccess,

@@ -1,5 +1,5 @@
 import { SnackbarCloseReason } from '@mui/base';
-import { Alert, Box, Button, Snackbar, TextField } from '@mui/material';
+import { Alert, Box, Button, TextField } from '@mui/material';
 import { styled } from '@mui/system';
 import { GetStaticProps } from 'next';
 import { useRouter } from 'next/router';
@@ -8,6 +8,7 @@ import React, { SyntheticEvent, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 
 import { viewerModel } from '@/entities/viewer';
+import { Snackbar } from '@/shared/ui';
 
 export const getStaticProps: GetStaticProps = async (context) => {
   const { locale } = context;

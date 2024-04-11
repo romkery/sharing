@@ -4,3 +4,4 @@ export { Card } from './card';
 export { Link } from './link';
 export { FullScreenLoader } from './loader';
 export { Modal } from './modal';
+export { Snackbar } from './snackbar';

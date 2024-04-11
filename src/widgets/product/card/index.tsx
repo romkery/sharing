@@ -4,7 +4,6 @@ import {
   Button,
   CardContent,
   CardMedia,
-  Snackbar,
   Typography,
 } from '@mui/material';
 import React, { SyntheticEvent, useState } from 'react';
@@ -14,7 +13,7 @@ import { themeConfig } from '@/app/theme';
 import { productsModel } from '@/entities/products';
 import { ProductData } from '@/entities/products/types';
 import { userModel } from '@/entities/user';
-import { Card as CardComponent, FullScreenLoader } from '@/shared/ui';
+import { Card as CardComponent, FullScreenLoader, Snackbar } from '@/shared/ui';
 
 interface ProductCardProps {
   product: ProductData;
