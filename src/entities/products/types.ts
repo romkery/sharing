@@ -10,7 +10,15 @@ export interface Product {
   locale: 'en' | 'ru';
   publishedAt: string;
   updatedAt: string;
+  location: Location;
 }
+
+type Location = {
+  country?: string;
+  city: string;
+  street: string;
+  postal_code?: number;
+};
 
 export interface ProductData {
   id: number;

@@ -5,7 +5,7 @@ import { ImageData, Product, ProductData } from '../types';
 export async function getProducts() {
   const { data } = await authorizedApiClient.get<{
     data: ProductData[];
-  }>(`products`);
+  }>(`products?populate=*`);
   return data.data;
 }
 
