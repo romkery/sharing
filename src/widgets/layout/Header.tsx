@@ -49,7 +49,9 @@ export const Header = () => {
       </IconButton>
       {!isXS && (
         <Tabs
-          value={router.pathname}
+          value={
+            router.pathname === '/' || router.pathname === '/profile' || false
+          }
           onChange={handleTabChange}
           textColor="primary"
           sx={{

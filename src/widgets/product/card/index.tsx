@@ -109,6 +109,7 @@ export const Card: React.FC<ProductCardProps> = ({
         sx={{
           width: '200px',
           height: '100%',
+          minHeight: '270px',
           padding: '10px',
           display: 'flex',
           flexDirection: 'column',
@@ -122,7 +123,7 @@ export const Card: React.FC<ProductCardProps> = ({
           boxSizing: 'content-box',
         }}
       >
-        <XSLink href="/" sx={{ alignItems: 'start' }}>
+        <XSLink href={`/product/${product.id}`} sx={{ alignItems: 'start' }}>
           <Box
             component="img"
             sx={{
