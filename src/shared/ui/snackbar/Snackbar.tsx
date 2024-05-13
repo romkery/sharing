@@ -9,5 +9,8 @@ export const Snackbar = ({
   ...props
 }: SnackbarProps & { disablePortal?: boolean }) => {
   const snackbar = <MuiSnackbar {...props}>{children}</MuiSnackbar>;
-  return disablePortal ? snackbar : createPortal(snackbar, document.body);
+  return disablePortal
+    ? snackbar
+    : typeof window !== 'undefined' &&
+        createPortal(snackbar, window.document.body);
 };
