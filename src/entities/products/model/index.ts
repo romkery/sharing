@@ -26,6 +26,7 @@ export function useProducts(
   return useQuery<ProductData[], Error>({
     queryKey: ['products'],
     queryFn: getProducts,
+    refetchOnMount: false,
     ...options,
   });
 }

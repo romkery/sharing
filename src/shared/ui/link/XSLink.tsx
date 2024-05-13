@@ -9,7 +9,7 @@ interface IProps extends PropsWithChildren, LinkProps {
   sx?: SxProps;
 }
 
-export const XSLink = ({ href, children }: IProps) => {
+export const XSLink = ({ href, sx, children }: IProps) => {
   return (
     <Link
       href={href}
@@ -32,6 +32,7 @@ export const XSLink = ({ href, children }: IProps) => {
             color: '#59ffd8',
           },
         },
+        ...sx,
       }}
     >
       {children}

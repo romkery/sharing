@@ -1,11 +1,5 @@
 import { SnackbarCloseReason } from '@mui/base';
-import {
-  Alert,
-  Button,
-  CardContent,
-  CardMedia,
-  Typography,
-} from '@mui/material';
+import { Alert, Box, Typography } from '@mui/material';
 import React, { SyntheticEvent, useState } from 'react';
 import { animated, useSpring } from 'react-spring';
 
@@ -13,7 +7,12 @@ import { themeConfig } from '@/app/theme';
 import { productsModel } from '@/entities/products';
 import { ProductData } from '@/entities/products/types';
 import { userModel } from '@/entities/user';
-import { Card as CardComponent, FullScreenLoader, Snackbar } from '@/shared/ui';
+import {
+  Card as CardComponent,
+  FullScreenLoader,
+  Snackbar,
+  XSLink,
+} from '@/shared/ui';
 
 interface ProductCardProps {
   product: ProductData;
@@ -24,7 +23,6 @@ interface ProductCardProps {
 
 export const Card: React.FC<ProductCardProps> = ({
   product,
-  onRentClick,
   onPublishClick,
   index,
 }) => {
@@ -37,6 +35,12 @@ export const Card: React.FC<ProductCardProps> = ({
   const { mutate: deleteProduct } = productsModel.useDeleteProduct();
 
   const [isCardVisible, setIsCardVisible] = useState(true);
+
+  const getProductLocation = () => {
+    return `${product.attributes.location.city ?? ''}${
+      product.attributes.location.city ? ',' : ''
+    } ${product.attributes.location.street ?? ''}`;
+  };
 
   // Создаем пружину для анимации
   const springProps = useSpring({
@@ -87,7 +91,6 @@ export const Card: React.FC<ProductCardProps> = ({
     const date = new Date(timestamp);
 
     return date.toLocaleDateString('ru-RU', {
-      year: 'numeric',
       month: 'long',
       day: 'numeric',
       hour: 'numeric',
@@ -104,94 +107,45 @@ export const Card: React.FC<ProductCardProps> = ({
     <animated.div style={springProps}>
       <CardComponent
         sx={{
-          width: 345,
+          width: '200px',
+          height: '100%',
+          minHeight: '270px',
           padding: '10px',
           display: 'flex',
           flexDirection: 'column',
-          gap: '20px',
+          gap: '4px',
           color: 'white',
           '[glow] &': {
             border: `1px solid ${themeConfig.palette.blue.default}`,
           },
           border: `1px solid ${themeConfig.palette.gray.semiDark}`,
           position: 'relative',
+          boxSizing: 'content-box',
         }}
       >
-        <Typography variant={'caption'}>
-          {formatTimestamp(product.attributes.createdAt)}
+        <XSLink href={`/product/${product.id}`} sx={{ alignItems: 'start' }}>
+          <Box
+            component="img"
+            sx={{
+              height: '150px',
+              width: '100%',
+              objectFit: 'cover',
+            }}
+            src={
+              img_url ||
+              'https://storage.googleapis.com/proudcity/mebanenc/uploads/2021/03/placeholder-image.png'
+            }
+            alt={title}
+          />
+          {title}
+        </XSLink>
+        <Typography variant="body2" color={themeConfig.palette.gray.medium}>
+          {getProductLocation()}
         </Typography>
-        <CardMedia
-          component="img"
-          height="140"
-          sx={{
-            width: '100%',
-            objectFit: 'contain',
-          }}
-          src={
-            img_url ||
-            'https://storage.googleapis.com/proudcity/mebanenc/uploads/2021/03/placeholder-image.png'
-          }
-          alt={title}
-        />
-        <CardContent
-          sx={{
-            width: '100%',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '2px',
-            color: 'white',
-          }}
-        >
-          <Typography gutterBottom variant="h5" component="div">
-            {title}
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Описание: {description}
-          </Typography>
-          <Typography
-            variant="caption"
-            color="text.secondary"
-            sx={{ marginTop: 1 }}
-          >
-            Владелец: {users.data?.find((u) => u.id === ownerId)?.username}
-          </Typography>
-          <Typography
-            variant="caption"
-            color="text.secondary"
-            sx={{ marginTop: 1 }}
-          >
-            Статус: {isRent ? 'забронировано' : 'доступно'}
-            {users.data?.find((u) => u.id === product?.attributes.customerId)
-              ?.username &&
-              ` пользователем ${users.data?.find(
-                (u) => u.id === product?.attributes.customerId,
-              )?.username}`}
-          </Typography>
-          <Typography
-            variant="caption"
-            color="text.secondary"
-            sx={{ marginTop: 1 }}
-          >
-            {isPublished ? 'Опубликовано' : 'Снято с публикации'}
-          </Typography>
-        </CardContent>
-        {product.attributes.ownerId !== user.data?.id ? (
-          <CardContent
-            sx={{ display: 'flex', justifyContent: 'space-between' }}
-          >
-            <Button variant="contained" onClick={handleRent} disabled={isRent}>
-              Арендовать
-            </Button>
-          </CardContent>
-        ) : (
-          <CardContent
-            sx={{ display: 'flex', justifyContent: 'space-between' }}
-          >
-            <Button variant="contained" onClick={handleDelete}>
-              {isPublished ? 'Снять' : 'Снято'}
-            </Button>
-          </CardContent>
-        )}
+        <Typography variant="body2" color={themeConfig.palette.gray.medium}>
+          {product.attributes.createdAt &&
+            formatTimestamp(product.attributes.createdAt)}
+        </Typography>
       </CardComponent>
       <Snackbar
         open={open}
