@@ -5,8 +5,6 @@ import {
   Button,
   FormControl,
   IconButton,
-  Input,
-  InputLabel,
   TextField,
 } from '@mui/material';
 import { Stack, styled } from '@mui/system';
@@ -86,16 +84,19 @@ export const CreateForm = ({
           display: 'flex',
           flexDirection: 'column',
         }}
+        autoComplete="off"
       >
         <StyledFormControl>
-          <InputLabel htmlFor="title">Название</InputLabel>
-          <Input
-            {...register('title', { required: 'Название обязательно' })}
+          <TextField
+            {...register('title', {
+              required: 'Название обязательно',
+            })}
             id="title"
+            variant="filled"
+            label="Название"
           />
           <span>{errors.title?.message}</span>
         </StyledFormControl>
-
         <StyledFormControl>
           <TextField
             {...register('description', {
@@ -104,11 +105,33 @@ export const CreateForm = ({
             id="description"
             multiline
             rows={4}
-            placeholder={'Описание'}
+            variant="filled"
+            label="Описание"
           />
           <span>{errors.description?.message}</span>
         </StyledFormControl>
-
+        <StyledFormControl>
+          <TextField
+            {...register('location.city', {
+              required: 'Город обязательна',
+            })}
+            id="description"
+            variant="filled"
+            label="Город"
+          />
+          <span>{errors.location?.city?.message}</span>
+        </StyledFormControl>
+        <StyledFormControl>
+          <TextField
+            {...register('location.street', {
+              required: 'Адрес обязателен',
+            })}
+            id="description"
+            variant="filled"
+            label="Адрес"
+          />
+          <span>{errors.location?.street?.message}</span>
+        </StyledFormControl>
         <ImageUploading
           multiple
           value={images}
@@ -175,7 +198,6 @@ export const CreateForm = ({
             </Stack>
           )}
         </ImageUploading>
-
         <StyledButton type="submit" variant="contained" color="primary">
           Опубликовать
         </StyledButton>
