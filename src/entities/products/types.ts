@@ -1,6 +1,6 @@
 export interface Product {
   title: string;
-  img_url: string;
+  images: ImagesType[];
   description: string;
   ownerId: number;
   isRent: boolean;
@@ -61,3 +61,8 @@ interface ImageFormat {
   width: number;
   height: number;
 }
+
+type ImagesType = {
+  id: number;
+  url: string;
+};

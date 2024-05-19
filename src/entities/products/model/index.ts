@@ -88,12 +88,12 @@ export function useImages(
 
 export function useCreateImage(
   options: Omit<
-    UseMutationOptions<{ url: string }, Error, FormData>,
+    UseMutationOptions<ImageData[], Error, FormData>,
     'mutationFn'
   > = {},
 ) {
-  return useMutation<{ url: string }, Error, FormData>({
-    mutationKey: ['image'],
+  return useMutation<ImageData[], Error, FormData>({
+    mutationKey: ['images'],
     mutationFn: (data: FormData) => postImage(data),
     ...options,
   });
