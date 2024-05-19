@@ -7,7 +7,7 @@ import React, { ReactElement } from 'react';
 import { themeConfig } from '@/app/theme';
 import { productsModel } from '@/entities/products';
 import { userModel } from '@/entities/user';
-import { Button, FullScreenLoader } from '@/shared/ui';
+import { Button, FullScreenLoader, ImageCarousel } from '@/shared/ui';
 import { AppLayoutAuthorized } from '@/widgets/layout';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
@@ -24,13 +24,12 @@ export default function Product() {
   const router = useRouter();
   const { id } = router.query;
   const { data: products } = productsModel.useProducts();
-  const { mutate: rentProduct } = productsModel.useUpdateProduct();
   const { data: user } = userModel.useUser();
   if (!id || !products || !user) return <FullScreenLoader />;
 
   const product = products.find((p) => p.id === Number(id))!.attributes;
-
-  const { title, img_url, location, description, isRent } = product;
+  const { title, images, location, description } = product;
+  const descriptionParagraphs = description.split('\n');
 
   return (
     <Box
@@ -52,29 +51,39 @@ export default function Product() {
           color: themeConfig.palette.white.default,
         }}
       >
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-          <Typography variant="h4">{title || ''}</Typography>
-          <Box
-            component="img"
-            alt="product"
-            src={
-              img_url ||
-              'https://storage.googleapis.com/proudcity/mebanenc/uploads/2021/03/placeholder-image.png'
-            }
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+          <Typography variant="h1" fontSize="36px">
+            {title || ''}
+          </Typography>
+          <ImageCarousel
             sx={{ width: '100%', objectFit: 'cover' }}
+            enableArrowNavigation
+            images={images.map((i) => i.url)}
           />
         </Box>
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-          <Typography variant="h5" fontWeight={600}>
+          <Typography variant="h2" fontSize="28px" fontWeight={600}>
             Адрес
           </Typography>
           <Typography variant="body1">{`${location.country}, ${location.city}, ${location.street}`}</Typography>
         </Box>
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-          <Typography variant="h5" fontWeight={600}>
+          <Typography variant="h2" fontSize="28px" fontWeight={600}>
             Описание
           </Typography>
-          <Typography variant="body1">{description}</Typography>
+          <Box>
+            {descriptionParagraphs.map((text, index) => {
+              return (
+                <Typography
+                  variant="body2"
+                  key={`p-${title}-desc-${index}`}
+                  margin="0 0 10px 0"
+                >
+                  {text}
+                </Typography>
+              );
+            })}
+          </Box>
         </Box>
         <Button
           onClick={() => console.log('Нажата кнопка написать продавцу')}

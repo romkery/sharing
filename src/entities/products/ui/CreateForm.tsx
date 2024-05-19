@@ -5,12 +5,9 @@ import {
   Button,
   FormControl,
   IconButton,
-  Input,
-  InputLabel,
   TextField,
 } from '@mui/material';
-import { Stack, styled } from '@mui/system';
-import Image from 'next/image';
+import { Box, Stack, styled } from '@mui/system';
 import React, { SyntheticEvent, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import ImageUploading, { ImageListType } from 'react-images-uploading';
@@ -26,15 +23,16 @@ export const CreateForm = ({
   onPostSuccess: () => void;
 }) => {
   const user = userModel.useUser();
-  const { mutate: postProduct, isPending: isPosting } =
-    productsModel.useCreateProduct({});
-
   const [open, setOpen] = useState(false);
+  const { mutate: postProduct } = productsModel.useCreateProduct({});
   const { mutate: postImage } = productsModel.useCreateImage({
     onSuccess: (data) => {
       postProduct({
         ...getValues(),
-        img_url: `${process.env.NEXT_PUBLIC_BASE_URL}${data.url}`,
+        images: data.map((i) => ({
+          id: i.id,
+          url: `${process.env.NEXT_PUBLIC_BASE_URL}${i.url}`,
+        })),
         ownerId: user.data?.id || 0,
         isPublished: true,
       });
@@ -45,7 +43,7 @@ export const CreateForm = ({
   });
 
   const [images, setImages] = useState<ImageListType>([]);
-  const maxNumber = 1;
+  const maxNumber = 5;
 
   const {
     getValues,
@@ -72,7 +70,9 @@ export const CreateForm = ({
   const onSubmit = async () => {
     if (images.length) {
       const formData = new FormData();
-      formData.append('files', images[0].file!);
+      images.forEach((i) => {
+        formData.append('files', i.file!);
+      });
       postImage(formData);
     }
   };
@@ -86,16 +86,19 @@ export const CreateForm = ({
           display: 'flex',
           flexDirection: 'column',
         }}
+        autoComplete="off"
       >
         <StyledFormControl>
-          <InputLabel htmlFor="title">Название</InputLabel>
-          <Input
-            {...register('title', { required: 'Название обязательно' })}
+          <TextField
+            {...register('title', {
+              required: 'Название обязательно',
+            })}
             id="title"
+            variant="filled"
+            label="Название"
           />
           <span>{errors.title?.message}</span>
         </StyledFormControl>
-
         <StyledFormControl>
           <TextField
             {...register('description', {
@@ -104,11 +107,33 @@ export const CreateForm = ({
             id="description"
             multiline
             rows={4}
-            placeholder={'Описание'}
+            variant="filled"
+            label="Описание"
           />
           <span>{errors.description?.message}</span>
         </StyledFormControl>
-
+        <StyledFormControl>
+          <TextField
+            {...register('location.city', {
+              required: 'Город обязательна',
+            })}
+            id="description"
+            variant="filled"
+            label="Город"
+          />
+          <span>{errors.location?.city?.message}</span>
+        </StyledFormControl>
+        <StyledFormControl>
+          <TextField
+            {...register('location.street', {
+              required: 'Адрес обязателен',
+            })}
+            id="description"
+            variant="filled"
+            label="Адрес"
+          />
+          <span>{errors.location?.street?.message}</span>
+        </StyledFormControl>
         <ImageUploading
           multiple
           value={images}
@@ -153,11 +178,15 @@ export const CreateForm = ({
                   <Stack spacing={2} direction="row">
                     {imageList.map((image, index) => (
                       <Stack key={index} direction="column" alignItems="center">
-                        <Image
+                        <Box
+                          component="img"
                           src={image['data_url']}
-                          alt=""
-                          width="100"
-                          height="100"
+                          alt={`upload image-${index}`}
+                          sx={{
+                            width: '100px',
+                            height: '100px',
+                            objectFit: 'cover',
+                          }}
                         />
                         <Stack direction="row" spacing={1} mt={1}>
                           <IconButton onClick={() => onImageUpdate(index)}>
@@ -175,7 +204,6 @@ export const CreateForm = ({
             </Stack>
           )}
         </ImageUploading>
-
         <StyledButton type="submit" variant="contained" color="primary">
           Опубликовать
         </StyledButton>

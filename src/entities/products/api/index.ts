@@ -46,9 +46,6 @@ export async function getImage() {
 }
 
 export async function postImage(data: FormData) {
-  const response = await authorizedApiClient.post<{ url: string }[]>(
-    `upload`,
-    data,
-  );
-  return response.data[0];
+  const response = await authorizedApiClient.post<ImageData[]>(`upload`, data);
+  return response.data;
 }
