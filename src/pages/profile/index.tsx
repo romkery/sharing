@@ -1,4 +1,3 @@
-import { Glow, GlowCapture } from '@codaworks/react-glow';
 import { Box, Typography } from '@mui/material';
 import { GetServerSideProps } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
@@ -29,77 +28,42 @@ export default function Profile() {
   }
 
   return (
-    <GlowCapture size={300}>
+    <Box
+      sx={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        flexDirection: 'column',
+        padding: '20px',
+        gap: '30px',
+      }}
+    >
+      <Typography variant="h5" color="primary" gutterBottom>
+        Мои обьявления
+      </Typography>
       <Box
         sx={{
           display: 'flex',
           justifyContent: 'center',
-          alignItems: 'center',
-          flexDirection: 'column',
-          padding: '20px',
-          gap: '30px',
+          // alignItems: 'center',
+          flexDirection: 'row',
+          gap: '20px',
+          flexWrap: 'wrap',
         }}
       >
-        <Typography variant="h5" color="primary" gutterBottom>
-          Мои обьявления
-        </Typography>
-        <Box
-          sx={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            flexDirection: 'row',
-            gap: '20px',
-            flexWrap: 'wrap',
-          }}
-        >
-          {products.data
-            ?.filter((p) => p.attributes.ownerId == user.data?.id)
-            .map((product, index) => {
-              return (
-                <Glow key={index}>
-                  <ProductCard
-                    index={index}
-                    key={`product-${product.id}`}
-                    product={product}
-                    onPublishClick={() => console.log('publish')}
-                    onRentClick={() => console.log('rent')}
-                  />
-                </Glow>
-              );
-            })}
-        </Box>
-        <Typography variant="h5" color="primary" gutterBottom>
-          Забронированные
-        </Typography>
-        <Box
-          sx={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            flexDirection: 'row',
-            gap: '20px',
-            flexWrap: 'wrap',
-          }}
-        >
-          {products.data
-            ?.filter((p) => p.attributes.customerId == user.data?.id)
-            .map((product, index) => {
-              return (
-                <Glow key={index}>
-                  <ProductCard
-                    index={index}
-                    key={`product-${product.id}`}
-                    product={product}
-                    onPublishClick={() => console.log('publish')}
-                    onRentClick={() => console.log('rent')}
-                  />
-                </Glow>
-              );
-            })}
-        </Box>
+        {products.data
+          ?.filter((p) => p.attributes.ownerId == user.data?.id)
+          .map((product, index) => {
+            return (
+              <ProductCard
+                index={index}
+                key={`product-${product.id}`}
+                product={product}
+              />
+            );
+          })}
       </Box>
-    </GlowCapture>
+    </Box>
   );
 }
 

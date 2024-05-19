@@ -1,4 +1,3 @@
-import { Glow, GlowCapture } from '@codaworks/react-glow';
 import { Box } from '@mui/material';
 import { GetServerSideProps } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
@@ -38,45 +37,39 @@ const Home = () => {
   }
 
   return (
-    <GlowCapture size={300}>
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        textWrap: 'wrap',
+        wordBreak: 'break-word',
+        fontSize: '16px',
+        textTransform: 'none',
+        textDecoration: 'none',
+      }}
+    >
       <Box
         sx={{
           display: 'flex',
-          flexDirection: 'column',
-          textWrap: 'wrap',
-          wordBreak: 'break-word',
-          fontSize: '16px',
-          textTransform: 'none',
-          textDecoration: 'none',
+          justifyContent: 'center',
+          alignItems: 'center',
+          padding: '20px',
+          flexDirection: 'row',
+          gap: '20px',
+          flexWrap: 'wrap',
         }}
       >
-        <Box
-          sx={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            padding: '20px',
-            flexDirection: 'row',
-            gap: '20px',
-            flexWrap: 'wrap',
-          }}
-        >
-          {products.data?.filter(filterByOwner).map((product, index) => {
-            return (
-              <Glow key={index}>
-                <ProductCard
-                  key={`product-${product.id}`}
-                  index={index}
-                  product={product}
-                  onPublishClick={() => console.log('publish')}
-                  onRentClick={() => console.log('rent')}
-                />
-              </Glow>
-            );
-          })}
-        </Box>
+        {products.data?.filter(filterByOwner).map((product, index) => {
+          return (
+            <ProductCard
+              key={`product-${product.id}`}
+              index={index}
+              product={product}
+            />
+          );
+        })}
       </Box>
-    </GlowCapture>
+    </Box>
   );
 };
 
